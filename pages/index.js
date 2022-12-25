@@ -1,42 +1,3 @@
-// DOM JS
-// import { useState } from 'react'
-
-// let runningTimer
-
-// export default function Home() {
-//   const [isActive, setIsActive] = useState(false)
-//   let progress = 0
-
-//   if (isActive) {
-//     startTimer()
-//   } else {
-//     clearInterval(runningTimer)
-//   }
-
-//   function startTimer() {
-//     runningTimer = setInterval(() => {
-//       progress += 1
-//       if (progress <= 100) {
-//         document
-//           .querySelector('.progress')
-//           .setAttribute('style', `width:${progress}%`)
-//       } else {
-//         setIsActive(false)
-//       }
-//     }, 1000)
-//   }
-
-//   return (
-//     <div
-//       className="w-[500px] h-[20px] border border-black relative mt-10 ml-10"
-//       onClick={() => setIsActive(true)}
-//     >
-//       <div className={`progress h-full bg-red-100 absolute`}></div>
-//     </div>
-//   )
-// }
-
-// REACT
 import { useEffect, useState } from 'react'
 import Clock from '../components/Clock'
 
@@ -46,7 +7,8 @@ export default function Home() {
   const [isActive, setIsActive] = useState(false)
   const [activeTimer, setActiveTimer] = useState('Pomodoro')
   const [progress, setProgress] = useState(0)
-  const [duration, setDuration] = useState(10)
+  const [duration, setDuration] = useState(25 * 60)
+  const [timeLeft, setTimeLeft] = useState(duration)
 
   useEffect(() => {
     function startTimer() {
@@ -59,13 +21,14 @@ export default function Home() {
             setProgress(0)
           }
         })
-        setDuration((prev) => {
+
+        setTimeLeft((prev) => {
           if (prev !== 0) {
             return prev - 1
           } else {
             setIsActive(false)
             setProgress(0)
-            setDuration(10)
+            setTimeLeft(10)
           }
         })
       }, 1000)
@@ -74,7 +37,7 @@ export default function Home() {
     if (isActive) {
       startTimer()
     } else {
-      return clearInterval(runningTimer)
+      clearInterval(runningTimer)
     }
   }, [isActive])
 
@@ -88,7 +51,7 @@ export default function Home() {
       setActiveTimer(curBtn.textContent)
 
       // reset progress bar
-      setIsActive(false)
+      // setIsActive(false)
       setProgress(0)
     }
   }
@@ -123,7 +86,7 @@ export default function Home() {
           </div>
           <Clock
             timer={activeTimer}
-            duration={duration}
+            timeLeft={timeLeft}
             setDuration={setDuration}
           />
           <button

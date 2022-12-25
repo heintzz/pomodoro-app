@@ -1,18 +1,18 @@
 import React from 'react'
 
-export default function Clock({ timer, duration }) {
+export default function Clock({ timer, timeLeft }) {
   switch (timer) {
     case 'Pomodoro':
       return (
         <div className="flex gap-x-2 text-8xl text-white justify-center font-semibold">
           <span className="minutes">
-            {duration / 60 > 9
-              ? Math.floor(duration / 60)
-              : '0' + Math.floor(duration / 60)}
+            {timeLeft / 60 > 9
+              ? Math.floor(timeLeft / 60)
+              : '0' + Math.floor(timeLeft / 60)}
           </span>
           <span>:</span>
           <span className="seconds">
-            {duration % 60 > 9 ? duration % 60 : '0' + (duration % 60)}
+            {timeLeft % 60 > 9 ? timeLeft % 60 : '0' + (timeLeft % 60)}
           </span>
         </div>
       )
