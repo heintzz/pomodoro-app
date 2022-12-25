@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import Clock from '../components/Clock'
+import Message from '../components/Message'
+import Timer from '../components/Timer'
 
 let runningTimer
 
 export default function Home() {
+  const [activeKey, setActiveKey] = useState(1)
   const [isActive, setIsActive] = useState(false)
   const [activeTimer, setActiveTimer] = useState('Pomodoro')
   const [progress, setProgress] = useState(0)
@@ -28,7 +30,7 @@ export default function Home() {
           } else {
             setIsActive(false)
             setProgress(0)
-            setTimeLeft(10)
+            setTimeLeft(duration)
           }
         })
       }, 1000)
@@ -41,19 +43,27 @@ export default function Home() {
     }
   }, [isActive])
 
-  function clickHandler(e) {
-    const activeBtn = document.querySelector('.activeButton')
-    const curBtn = e.target
-
-    if (activeBtn.textContent !== curBtn.textContent) {
-      activeBtn.classList.remove('activeButton')
-      curBtn.classList.add('activeButton')
-      setActiveTimer(curBtn.textContent)
-
-      // reset progress bar
-      // setIsActive(false)
+  function clickHandler(key) {
+    if (activeKey !== key) {
+      setIsActive(false)
       setProgress(0)
+
+      if (key == 1) {
+        setActiveTimer('Pomodoro')
+        setDuration(25 * 60)
+        setTimeLeft(25 * 60)
+      } else if (key == 2) {
+        setActiveTimer('Short Break')
+        setDuration(5 * 60)
+        setTimeLeft(5 * 60)
+      } else {
+        setActiveTimer('Long Break')
+        setDuration(15 * 60)
+        setTimeLeft(15 * 60)
+      }
     }
+
+    setActiveKey(key)
   }
 
   return (
@@ -72,23 +82,34 @@ export default function Home() {
         <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
           <div className="flex gap-x-5 justify-center text-white">
             <p
-              className="activeButton px-3 py-2 cursor-pointer "
-              onClick={clickHandler}
+              key={1}
+              className={`px-3 py-2 cursor-pointer ${
+                1 == activeKey && 'active-window'
+              }`}
+              onClick={() => clickHandler(1)}
             >
               Pomodoro
             </p>
-            <p className="px-3 py-2 cursor-pointer" onClick={clickHandler}>
+            <p
+              key={2}
+              className={`px-3 py-2 cursor-pointer ${
+                2 == activeKey && 'active-window'
+              }`}
+              onClick={() => clickHandler(2)}
+            >
               Short Break
             </p>
-            <p className="px-3 py-2 cursor-pointer " onClick={clickHandler}>
+            <p
+              key={3}
+              className={`px-3 py-2 cursor-pointer ${
+                3 == activeKey && 'active-window'
+              }`}
+              onClick={() => clickHandler(3)}
+            >
               Long Break
             </p>
           </div>
-          <Clock
-            timer={activeTimer}
-            timeLeft={timeLeft}
-            setDuration={setDuration}
-          />
+          <Timer timeLeft={timeLeft} />
           <button
             onClick={() => setIsActive((prev) => !prev)}
             className="bg-white py-3 px-8 w-[150px] rounded-md mx-auto text-xl font-semibold tracking-wider text-[#ca5652] shadow-[inset_0_-2px_6px_rgba(189,195,199,1)]"
@@ -96,9 +117,7 @@ export default function Home() {
             {isActive ? 'PAUSE' : 'START'}
           </button>
         </div>
-        <div className="text-center text-white mt-10">
-          <p className="text-white/80 tracking-wider">Time to Focus!</p>
-        </div>
+        <Message timerType={activeTimer} />
       </div>
     </div>
   )
