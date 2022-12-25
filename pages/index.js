@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Message from '../components/Message'
 import Timer from '../components/Timer'
 
@@ -8,9 +8,16 @@ export default function Home() {
   const [activeKey, setActiveKey] = useState(1)
   const [isActive, setIsActive] = useState(false)
   const [activeTimer, setActiveTimer] = useState('Pomodoro')
+
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(25 * 60)
   const [timeLeft, setTimeLeft] = useState(duration)
+
+  const audioElement = useRef(null)
+
+  function playAudio() {
+    audioElement.current.play()
+  }
 
   useEffect(() => {
     function startTimer() {
@@ -40,6 +47,7 @@ export default function Home() {
       startTimer()
     } else {
       clearInterval(runningTimer)
+      playAudio()
     }
   }, [isActive])
 
@@ -68,6 +76,7 @@ export default function Home() {
 
   return (
     <div className="p-[18px] w-screen">
+      <audio ref={audioElement} src="./ringtone.mp3" />
       <div
         className={`max-w-[480px] h-[10px] relative mx-auto ${
           progress !== 100 && 'bg-red-900/30'
