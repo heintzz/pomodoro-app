@@ -4,7 +4,7 @@ import Timer from '../components/Timer'
 
 let runningTimer
 let pomodoroDuration = 25 * 60
-let shortBreakDuration = 0.05 * 60
+let shortBreakDuration = 5 * 60
 let longBreakDuration = 15 * 60
 
 export default function Home() {
