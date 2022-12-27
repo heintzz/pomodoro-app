@@ -3,6 +3,9 @@ import Message from '../components/Message'
 import Timer from '../components/Timer'
 
 let runningTimer
+let pomodoroDuration = 25 * 60
+let shortBreakDuration = 0.05 * 60
+let longBreakDuration = 15 * 60
 
 export default function Home() {
   const [activeKey, setActiveKey] = useState(1)
@@ -12,6 +15,7 @@ export default function Home() {
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(25 * 60)
   const [timeLeft, setTimeLeft] = useState(duration)
+  const [isOver, setIsOver] = useState(false)
 
   const audioElement = useRef(null)
 
@@ -36,6 +40,7 @@ export default function Home() {
             return prev - 1
           } else {
             setIsActive(false)
+            setIsOver(true)
             setProgress(0)
             setTimeLeft(duration)
           }
@@ -45,9 +50,12 @@ export default function Home() {
 
     if (isActive) {
       startTimer()
-    } else {
+      setIsOver(false)
+    } else if (isOver) {
       clearInterval(runningTimer)
       playAudio()
+    } else if (!isOver && !isActive) {
+      clearInterval(runningTimer)
     }
   }, [isActive])
 
@@ -58,16 +66,16 @@ export default function Home() {
 
       if (key == 1) {
         setActiveTimer('Pomodoro')
-        setDuration(25 * 60)
-        setTimeLeft(25 * 60)
+        setDuration(pomodoroDuration)
+        setTimeLeft(pomodoroDuration)
       } else if (key == 2) {
         setActiveTimer('Short Break')
-        setDuration(5 * 60)
-        setTimeLeft(5 * 60)
+        setDuration(shortBreakDuration)
+        setTimeLeft(shortBreakDuration)
       } else {
         setActiveTimer('Long Break')
-        setDuration(15 * 60)
-        setTimeLeft(15 * 60)
+        setDuration(longBreakDuration)
+        setTimeLeft(longBreakDuration)
       }
     }
 
@@ -75,15 +83,11 @@ export default function Home() {
   }
 
   return (
-    <div className="p-[18px] w-screen">
+    <div className="p-[18px]">
       <audio ref={audioElement} src="./ringtone.mp3" />
-      <div
-        className={`max-w-[480px] h-[10px] relative mx-auto ${
-          progress !== 100 && 'bg-red-900/30'
-        } rounded-md`}
-      >
+      <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto  rounded-lg">
         <div
-          className={`progress h-full bg-red-100 absolute rounded-md`}
+          className={`progress h-full bg-red-100 absolute rounded-lg`}
           style={{ width: `${progress}%` }}
         ></div>
       </div>
