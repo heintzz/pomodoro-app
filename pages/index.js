@@ -13,8 +13,7 @@ export default function Home() {
   const [activeTimer, setActiveTimer] = useState('Pomodoro')
 
   const [progress, setProgress] = useState(0)
-  const [duration, setDuration] = useState(25 * 60)
-  const [timeLeft, setTimeLeft] = useState(duration)
+  const [timeLeft, setTimeLeft] = useState(pomodoroDuration)
   const [isOver, setIsOver] = useState(false)
 
   const audioElement = useRef(null)
@@ -26,23 +25,15 @@ export default function Home() {
   useEffect(() => {
     function startTimer() {
       runningTimer = setInterval(() => {
-        setProgress((prev) => {
-          if (prev !== 100) {
-            return prev + 100 / duration
-          } else {
-            setIsActive(false)
-            setProgress(0)
-          }
-        })
-
         setTimeLeft((prev) => {
           if (prev !== 0) {
+            setProgress((prev) => prev + 100 / timeLeft)
             return prev - 1
           } else {
-            setIsActive(false)
-            setIsOver(true)
             setProgress(0)
-            setTimeLeft(duration)
+            setIsOver(true)
+            setIsActive(false)
+            setTimeLeft(pomodoroDuration)
           }
         })
       }, 1000)
@@ -51,10 +42,13 @@ export default function Home() {
     if (isActive) {
       startTimer()
       setIsOver(false)
-    } else if (isOver) {
-      clearInterval(runningTimer)
+    }
+    if (isOver) {
       playAudio()
-    } else if (!isOver && !isActive) {
+      clearInterval(runningTimer)
+    }
+    if (timeLeft && !isActive) {
+      setProgress(0)
       clearInterval(runningTimer)
     }
   }, [isActive])
@@ -62,23 +56,20 @@ export default function Home() {
   function clickHandler(key) {
     if (activeKey !== key) {
       setIsActive(false)
-      setProgress(0)
-
-      if (key == 1) {
-        setActiveTimer('Pomodoro')
-        setDuration(pomodoroDuration)
-        setTimeLeft(pomodoroDuration)
-      } else if (key == 2) {
-        setActiveTimer('Short Break')
-        setDuration(shortBreakDuration)
-        setTimeLeft(shortBreakDuration)
-      } else {
-        setActiveTimer('Long Break')
-        setDuration(longBreakDuration)
-        setTimeLeft(longBreakDuration)
+      switch (key) {
+        case 2:
+          setActiveTimer('Short Break')
+          setTimeLeft(shortBreakDuration)
+          break
+        case 3:
+          setActiveTimer('Long Break')
+          setTimeLeft(longBreakDuration)
+          break
+        default:
+          setActiveTimer('Pomodoro')
+          setTimeLeft(pomodoroDuration)
       }
     }
-
     setActiveKey(key)
   }
 
