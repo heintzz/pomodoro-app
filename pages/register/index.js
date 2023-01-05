@@ -1,5 +1,6 @@
+import axios from 'axios'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import Separator from '../../components/Separator'
 
 const input =
@@ -7,6 +8,31 @@ const input =
 const label = 'text-slate-300 tracking-wide'
 
 export default function index() {
+  const [user, setUser] = useState({})
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  function emailInputHandler(e) {
+    setEmail(e.target.value)
+  }
+
+  function passwordInputHandler(e) {
+    setPassword(e.target.value)
+  }
+
+  function submitHandler(e) {
+    e.preventDefault()
+
+    setUser({
+      email,
+      password,
+    })
+
+    axios
+      .post('http://localhost:3400/register', user)
+      .then((data) => console.log(data))
+  }
+
   return (
     <div className="p-[18px] w-screen">
       <div className="max-w-[400px] mx-auto">
@@ -19,22 +45,36 @@ export default function index() {
             Sign up with Google
           </button>
           <Separator />
-          <form className="flex flex-col gap-y-3">
+          <form className="flex flex-col gap-y-3" onSubmit={submitHandler}>
             <label htmlFor="email" className={label}>
               EMAIL
             </label>
             <input
-              type="text"
+              type="email"
               placeholder="example@mail.com"
               id="email"
               className={input}
+              value={email}
+              onChange={emailInputHandler}
             />
-
-            <button className="w-full mt-5 p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg">
+            <label htmlFor="email" className={label}>
+              PASSWORD
+            </label>
+            <input
+              type="password"
+              placeholder="•••••••"
+              id="password"
+              className={input}
+              value={password}
+              onChange={passwordInputHandler}
+            />
+            <button
+              type="submit"
+              className="w-full mt-5 p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg"
+            >
               Sign up with Email
             </button>
           </form>
-
           <p className="underline text-center mt-2 text-slate-400 font-light">
             Forgot Password
           </p>

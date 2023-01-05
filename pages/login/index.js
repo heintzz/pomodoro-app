@@ -51,7 +51,7 @@ export default function index() {
           <p className="text-white/80 tracking-wider">
             Do not have an account?
           </p>
-          <Link href="/signup">
+          <Link href="/register">
             <p className="underline">Create account</p>
           </Link>
         </div>
