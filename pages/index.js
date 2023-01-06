@@ -1,3 +1,4 @@
+import Router from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import Message from '../components/Message'
 import Timer from '../components/Timer'
@@ -8,6 +9,8 @@ let shortBreakDuration = 5 * 60
 let longBreakDuration = 15 * 60
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const [activeKey, setActiveKey] = useState(1)
   const [isActive, setIsActive] = useState(false)
   const [activeTimer, setActiveTimer] = useState('Pomodoro')
@@ -53,6 +56,12 @@ export default function Home() {
     }
   }, [isActive])
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      Router.push('/login')
+    }
+  }, [isLoggedIn])
+
   function clickHandler(key) {
     if (activeKey !== key) {
       setIsActive(false)
@@ -73,56 +82,58 @@ export default function Home() {
     setActiveKey(key)
   }
 
-  return (
-    <div className="p-[18px]">
-      <audio ref={audioElement} src="./ringtone.mp3" />
-      <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto  rounded-lg">
-        <div
-          className={`progress h-full bg-red-100 absolute rounded-lg`}
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-      <div className="max-w-[480px] mx-auto mt-5">
-        <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
-          <div className="flex gap-x-5 justify-center text-white">
-            <p
-              key={1}
-              className={`px-3 py-2 cursor-pointer ${
-                1 == activeKey && 'active-window'
-              }`}
-              onClick={() => clickHandler(1)}
-            >
-              Pomodoro
-            </p>
-            <p
-              key={2}
-              className={`px-3 py-2 cursor-pointer ${
-                2 == activeKey && 'active-window'
-              }`}
-              onClick={() => clickHandler(2)}
-            >
-              Short Break
-            </p>
-            <p
-              key={3}
-              className={`px-3 py-2 cursor-pointer ${
-                3 == activeKey && 'active-window'
-              }`}
-              onClick={() => clickHandler(3)}
-            >
-              Long Break
-            </p>
-          </div>
-          <Timer timeLeft={timeLeft} />
-          <button
-            onClick={() => setIsActive((prev) => !prev)}
-            className="bg-white py-3 px-8 w-[150px] rounded-md mx-auto text-xl font-semibold tracking-wider text-[#ca5652] shadow-[inset_0_-2px_6px_rgba(189,195,199,1)]"
-          >
-            {isActive ? 'PAUSE' : 'START'}
-          </button>
+  {
+    isLoggedIn && (
+      <div className="p-[18px]">
+        <audio ref={audioElement} src="./ringtone.mp3" />
+        <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto  rounded-lg">
+          <div
+            className={`progress h-full bg-red-100 absolute rounded-lg`}
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
-        <Message timerType={activeTimer} />
+        <div className="max-w-[480px] mx-auto mt-5">
+          <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
+            <div className="flex gap-x-5 justify-center text-white">
+              <p
+                key={1}
+                className={`px-3 py-2 cursor-pointer ${
+                  1 == activeKey && 'active-window'
+                }`}
+                onClick={() => clickHandler(1)}
+              >
+                Pomodoro
+              </p>
+              <p
+                key={2}
+                className={`px-3 py-2 cursor-pointer ${
+                  2 == activeKey && 'active-window'
+                }`}
+                onClick={() => clickHandler(2)}
+              >
+                Short Break
+              </p>
+              <p
+                key={3}
+                className={`px-3 py-2 cursor-pointer ${
+                  3 == activeKey && 'active-window'
+                }`}
+                onClick={() => clickHandler(3)}
+              >
+                Long Break
+              </p>
+            </div>
+            <Timer timeLeft={timeLeft} />
+            <button
+              onClick={() => setIsActive((prev) => !prev)}
+              className="bg-white py-3 px-8 w-[150px] rounded-md mx-auto text-xl font-semibold tracking-wider text-[#ca5652] shadow-[inset_0_-2px_6px_rgba(189,195,199,1)]"
+            >
+              {isActive ? 'PAUSE' : 'START'}
+            </button>
+          </div>
+          <Message timerType={activeTimer} />
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }

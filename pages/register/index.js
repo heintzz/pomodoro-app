@@ -2,35 +2,27 @@ import axios from 'axios'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import Separator from '../../components/Separator'
+import useInput from '../../hooks/useInput'
 
 const input =
   'w-full bg-slate-100 text-slate-500 p-2 font-light text-md rounded-lg'
 const label = 'text-slate-300 tracking-wide'
 
-export default function index() {
+export default function register() {
   const [user, setUser] = useState({})
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const email = useInput('')
+  const password = useInput('')
 
-  function emailInputHandler(e) {
-    setEmail(e.target.value)
-  }
-
-  function passwordInputHandler(e) {
-    setPassword(e.target.value)
-  }
-
-  function submitHandler(e) {
+  async function submitHandler(e) {
     e.preventDefault()
 
     setUser({
-      email,
-      password,
+      email: email.value,
+      password: password.value,
     })
 
-    axios
-      .post('http://localhost:3400/register', user)
-      .then((data) => console.log(data))
+    const result = await axios.post('http://localhost:3400/register', user)
+    console.log(result)
   }
 
   return (
@@ -54,8 +46,7 @@ export default function index() {
               placeholder="example@mail.com"
               id="email"
               className={input}
-              value={email}
-              onChange={emailInputHandler}
+              {...email}
             />
             <label htmlFor="email" className={label}>
               PASSWORD
@@ -65,8 +56,7 @@ export default function index() {
               placeholder="•••••••"
               id="password"
               className={input}
-              value={password}
-              onChange={passwordInputHandler}
+              {...password}
             />
             <button
               type="submit"

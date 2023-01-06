@@ -1,12 +1,30 @@
+import axios from 'axios'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import Separator from '../../components/Separator'
+import useInput from '../../hooks/useInput'
 
 const input =
   'w-full bg-slate-100 text-slate-500 p-2 font-light text-md rounded-lg'
 const label = 'text-slate-300 tracking-wide'
 
-export default function index() {
+export default function login() {
+  const [user, setUser] = useState({})
+  const email = useInput('')
+  const password = useInput('')
+
+  async function submitHandler(e) {
+    e.preventDefault()
+
+    setUser({
+      email: email.value,
+      password: password.value,
+    })
+
+    const result = await axios.post('http://localhost:3400/auth', user)
+    console.log(result)
+  }
+
   return (
     <div className="p-[18px] w-screen">
       <div className="max-w-[400px] mx-auto">
@@ -19,7 +37,7 @@ export default function index() {
             Login with Google
           </button>
           <Separator />
-          <form className="flex flex-col gap-y-3">
+          <form className="flex flex-col gap-y-3" onSubmit={submitHandler}>
             <label htmlFor="email" className={label}>
               EMAIL
             </label>
@@ -28,6 +46,7 @@ export default function index() {
               placeholder="example@mail.com"
               id="email"
               className={input}
+              {...email}
             />
             <label htmlFor="password" className={label}>
               PASSWORD
@@ -37,6 +56,7 @@ export default function index() {
               placeholder="•••••••"
               id="password"
               className={input}
+              {...password}
             />
             <button className="w-full mt-5 p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg">
               Login with Email
