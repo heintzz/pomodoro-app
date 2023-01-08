@@ -11,7 +11,7 @@ export async function getStaticProps() {
     return {
         props: {
             pomodoroDuration: 25 * 60,
-            shortBreakDuration: 0.05 * 60,
+            shortBreakDuration: 5 * 60,
             longBreakDuration: 15 * 60,
         },
     }
