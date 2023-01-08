@@ -1,17 +1,16 @@
 import React from 'react'
 
-export default function SwitchMode({ activeKey, clickHandler }) {
+export default function SwitchMode({ activeMode, clickHandler }) {
     return (
         <div className="flex gap-x-5 justify-center text-white">
             {['Pomodoro', 'Short Break', 'Long Break'].map((mode, i) => {
-                const key = i + 1
                 return (
                     <p
-                        key={key}
+                        key={mode}
                         className={`px-3 py-2 cursor-pointer ${
-                            key == activeKey && 'active-window'
+                            mode === activeMode && ' active-window'
                         }`}
-                        onClick={() => clickHandler(key)}
+                        onClick={() => clickHandler(mode)}
                     >
                         {mode}
                     </p>

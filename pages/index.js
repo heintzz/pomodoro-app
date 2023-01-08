@@ -7,6 +7,7 @@ import Timer from '../components/Timer'
 let runningTimer
 
 export async function getStaticProps() {
+    // prepare for getting the props from
     return {
         props: {
             pomodoroDuration: 25 * 60,
@@ -19,9 +20,8 @@ export async function getStaticProps() {
 export default function Home(props) {
     const { pomodoroDuration, shortBreakDuration, longBreakDuration } = props
 
-    const [activeKey, setActiveKey] = useState(1)
     const [isActive, setIsActive] = useState(false)
-    const [mode, setMode] = useState('Pomodoro')
+    const [activeMode, setActiveMode] = useState('Pomodoro')
 
     const [progress, setProgress] = useState(0)
     const [timeLeft, setTimeLeft] = useState(pomodoroDuration)
@@ -64,28 +64,28 @@ export default function Home(props) {
         }
     }, [isActive])
 
-    function switchMode(key) {
-        switch (key) {
-            case 2:
-                setMode('Short Break')
+    function switchMode(mode) {
+        switch (mode) {
+            case 'Short Break':
+                setActiveMode('Short Break')
                 setTimeLeft(shortBreakDuration)
                 break
-            case 3:
-                setMode('Long Break')
+            case 'Long Break':
+                setActiveMode('Long Break')
                 setTimeLeft(longBreakDuration)
                 break
             default:
-                setMode('Pomodoro')
+                setActiveMode('Pomodoro')
                 setTimeLeft(pomodoroDuration)
         }
     }
 
-    function clickHandler(key) {
-        if (activeKey !== key) {
+    function clickHandler(mode) {
+        if (mode !== activeMode) {
             setIsActive(false)
-            switchMode(key)
+            switchMode(mode)
         }
-        setActiveKey(key)
+        setActiveMode(mode)
     }
 
     return (
@@ -100,13 +100,13 @@ export default function Home(props) {
             <div className="max-w-[480px] mx-auto mt-5">
                 <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
                     <SwitchMode
-                        activeKey={activeKey}
+                        activeMode={activeMode}
                         clickHandler={clickHandler}
                     />
                     <Timer timeLeft={timeLeft} />
                     <Button isActive={isActive} setIsActive={setIsActive} />
                 </div>
-                <Message timerType={mode} />
+                <Message timerType={activeMode} />
             </div>
         </div>
     )
