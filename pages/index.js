@@ -7,7 +7,7 @@ import Timer from '../components/Timer'
 
 let runningTimer
 let pomodoroDuration = 25 * 60
-let shortBreakDuration = 5 * 60
+let shortBreakDuration = 0.05 * 60
 let longBreakDuration = 15 * 60
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
                         setProgress(0)
                         setIsOver(true)
                         setIsActive(false)
-                        setTimeLeft(pomodoroDuration)
+                        switchMode(activeKey)
                     }
                 })
             }, 1000)
@@ -56,22 +56,26 @@ export default function Home() {
         }
     }, [isActive])
 
+    function switchMode(key) {
+        switch (key) {
+            case 2:
+                setMode('Short Break')
+                setTimeLeft(shortBreakDuration)
+                break
+            case 3:
+                setMode('Long Break')
+                setTimeLeft(longBreakDuration)
+                break
+            default:
+                setMode('Pomodoro')
+                setTimeLeft(pomodoroDuration)
+        }
+    }
+
     function clickHandler(key) {
         if (activeKey !== key) {
             setIsActive(false)
-            switch (key) {
-                case 2:
-                    setMode('Short Break')
-                    setTimeLeft(shortBreakDuration)
-                    break
-                case 3:
-                    setMode('Long Break')
-                    setTimeLeft(longBreakDuration)
-                    break
-                default:
-                    setMode('Pomodoro')
-                    setTimeLeft(pomodoroDuration)
-            }
+            switchMode(key)
         }
         setActiveKey(key)
     }
