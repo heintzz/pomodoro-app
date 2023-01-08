@@ -7,7 +7,7 @@ import Timer from '../components/Timer'
 
 let runningTimer
 let pomodoroDuration = 25 * 60
-let shortBreakDuration = 0.05 * 60
+let shortBreakDuration = 5 * 60
 let longBreakDuration = 15 * 60
 
 export default function Home() {
@@ -46,7 +46,7 @@ export default function Home() {
             startTimer()
             setIsOver(false)
         }
-        if (isOver) {
+        if (!isActive && isOver) {
             playAudio()
             clearInterval(runningTimer)
         }
@@ -83,7 +83,7 @@ export default function Home() {
     return (
         <div className="p-[18px]">
             <audio ref={audioElement} src="./ringtone.mp3" />
-            <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto  rounded-lg">
+            <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto rounded-lg">
                 <div
                     className={`progress h-full bg-red-100 absolute rounded-lg`}
                     style={{ width: `${progress}%` }}
