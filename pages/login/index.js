@@ -21,7 +21,12 @@ export default function login() {
             password: password.value,
         })
 
-        const result = await axios.post('http://localhost:3500/auth', user)
+        try {
+            const result = await axios.post('http://localhost:3500/auth', user)
+            console.log(result)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (

@@ -1,4 +1,3 @@
-import Router from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
 import Message from '../components/Message'
@@ -6,11 +5,20 @@ import SwitchMode from '../components/SwitchMode'
 import Timer from '../components/Timer'
 
 let runningTimer
-let pomodoroDuration = 25 * 60
-let shortBreakDuration = 5 * 60
-let longBreakDuration = 15 * 60
 
-export default function Home() {
+export async function getStaticProps() {
+    return {
+        props: {
+            pomodoroDuration: 25 * 60,
+            shortBreakDuration: 5 * 60,
+            longBreakDuration: 15 * 60,
+        },
+    }
+}
+
+export default function Home(props) {
+    const { pomodoroDuration, shortBreakDuration, longBreakDuration } = props
+
     const [activeKey, setActiveKey] = useState(1)
     const [isActive, setIsActive] = useState(false)
     const [mode, setMode] = useState('Pomodoro')
@@ -45,13 +53,13 @@ export default function Home() {
         if (isActive) {
             startTimer()
             setIsOver(false)
-        }
-        if (!isActive && isOver) {
-            playAudio()
-            clearInterval(runningTimer)
-        }
-        if (timeLeft && !isActive) {
-            setProgress(0)
+        } else {
+            if (isOver) {
+                playAudio()
+            }
+            if (timeLeft) {
+                setProgress(0)
+            }
             clearInterval(runningTimer)
         }
     }, [isActive])

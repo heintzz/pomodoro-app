@@ -21,12 +21,8 @@ export default function Register() {
             password: password.value,
         })
 
-        
         try {
-            const result = await axios.post(
-                `http://localhost:3500/register`,
-                user
-            )
+            const result = await axios.post('http://localhost:3500/register', user)
             console.log(result)
         } catch (err) {
             console.error(err)
