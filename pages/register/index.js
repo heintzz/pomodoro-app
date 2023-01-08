@@ -84,7 +84,7 @@ export default function Register() {
                             type="email"
                             placeholder="example@mail.com"
                             id="email"
-                            value={user.email}
+                            value={user.email || ''}
                             className={input}
                             onChange={changeValue}
                         />
@@ -95,7 +95,7 @@ export default function Register() {
                             type="password"
                             placeholder="•••••••"
                             id="password"
-                            value={user.password}
+                            value={user.password || ''}
                             className={input}
                             onChange={changeValue}
                         />
