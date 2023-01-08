@@ -11,7 +11,7 @@ const label = 'text-slate-400 tracking-wide'
 
 export async function getServerSideProps(ctx) {
     const cookies = nookies.get(ctx)
-    
+
     if (cookies?.jwt) {
         return {
             redirect: {
@@ -82,6 +82,7 @@ export default function Login() {
                             type="email"
                             placeholder="example@mail.com"
                             id="email"
+                            value={user.email}
                             className={input}
                             onChange={changeValue}
                         />
@@ -92,6 +93,7 @@ export default function Login() {
                             type="password"
                             placeholder="•••••••"
                             id="password"
+                            value={user.password}
                             className={input}
                             onChange={changeValue}
                         />
