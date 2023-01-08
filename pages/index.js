@@ -11,7 +11,7 @@ export async function getStaticProps() {
     return {
         props: {
             pomodoroDuration: 25 * 60,
-            shortBreakDuration: 5 * 60,
+            shortBreakDuration: 0.05 * 60,
             longBreakDuration: 15 * 60,
         },
     }
@@ -20,8 +20,8 @@ export async function getStaticProps() {
 export default function Home(props) {
     const { pomodoroDuration, shortBreakDuration, longBreakDuration } = props
 
-    const [isActive, setIsActive] = useState(false)
     const [activeMode, setActiveMode] = useState('Pomodoro')
+    const [isActive, setIsActive] = useState(false)
 
     const [progress, setProgress] = useState(0)
     const [timeLeft, setTimeLeft] = useState(pomodoroDuration)
@@ -44,7 +44,7 @@ export default function Home(props) {
                         setProgress(0)
                         setIsOver(true)
                         setIsActive(false)
-                        switchMode(activeKey)
+                        switchMode(activeMode)
                     }
                 })
             }, 1000)
@@ -57,7 +57,7 @@ export default function Home(props) {
             if (isOver) {
                 playAudio()
             }
-            if (timeLeft) {
+            if (!timeLeft) {
                 setProgress(0)
             }
             clearInterval(runningTimer)
