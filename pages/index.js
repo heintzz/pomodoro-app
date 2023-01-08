@@ -3,11 +3,20 @@ import Button from '../components/Button'
 import Message from '../components/Message'
 import SwitchMode from '../components/SwitchMode'
 import Timer from '../components/Timer'
+import nookies from 'nookies'
 
 let runningTimer
 
-export async function getStaticProps() {
-    // prepare for getting the props from
+export async function getServerSideProps(ctx) {
+    const cookies = nookies.get(ctx)
+
+    if (!cookies?.jwt) {
+        return {
+            redirect: {
+                destination: '/login',
+            },
+        }
+    }
     return {
         props: {
             pomodoroDuration: 25 * 60,
@@ -89,7 +98,7 @@ export default function Home(props) {
     }
 
     return (
-        <div className="p-[18px]">
+        <div className="bg-[#ca5652] w-screen h-screen p-4">
             <audio ref={audioElement} src="./ringtone.mp3" />
             <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto rounded-lg">
                 <div
