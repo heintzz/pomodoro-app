@@ -36,17 +36,24 @@ export default function Login() {
         })
     }
 
-    async function submitHandler(e) {
+    function submitHandler(e) {
         e.preventDefault()
 
         try {
-            const result = await axios.post('http://localhost:3500/auth', user)
+            async function login() {
+                const result = await axios.post(
+                    'http://localhost:3500/auth',
+                    user
+                )
 
-            if (result?.data?.accessToken) {
-                e.target.reset()
-                nookies.set(null, 'jwt', result.data.accessToken)
-                Router.replace('/')
+                if (result?.data?.accessToken) {
+                    e.target.reset()
+                    nookies.set(null, 'jwt', result.data.accessToken)
+                    Router.replace('/')
+                }
             }
+
+            login()
         } catch (error) {
             console.error(error)
         }
@@ -75,7 +82,6 @@ export default function Login() {
                             type="email"
                             placeholder="example@mail.com"
                             id="email"
-                            value={user.email || ''}
                             className={input}
                             onChange={changeValue}
                         />
@@ -86,7 +92,6 @@ export default function Login() {
                             type="password"
                             placeholder="•••••••"
                             id="password"
-                            value={user.password || ''}
                             className={input}
                             onChange={changeValue}
                         />

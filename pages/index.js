@@ -4,6 +4,7 @@ import Message from '../components/Message'
 import SwitchMode from '../components/SwitchMode'
 import Timer from '../components/Timer'
 import nookies from 'nookies'
+import axios from 'axios'
 
 let runningTimer
 
@@ -17,18 +18,23 @@ export async function getServerSideProps(ctx) {
             },
         }
     }
+
+    const res = await axios.get('http://localhost:3500/timer', {
+        headers: {
+            Authorization: `Bearer ${cookies?.jwt}`,
+        },
+    })
+
+    const settings = res.data
     return {
         props: {
-            pomodoroDuration: 25 * 60,
-            shortBreakDuration: 5 * 60,
-            longBreakDuration: 15 * 60,
+            ...settings,
         },
     }
 }
 
 export default function Home(props) {
     const { pomodoroDuration, shortBreakDuration, longBreakDuration } = props
-
     const [activeMode, setActiveMode] = useState('Pomodoro')
     const [isActive, setIsActive] = useState(false)
 
