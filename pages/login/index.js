@@ -41,10 +41,7 @@ export default function Login() {
 
         try {
             async function login() {
-                const result = await axios.post(
-                    'http://localhost:3500/auth',
-                    user
-                )
+                const result = await axios.post('/auth', user)
 
                 if (result?.data?.accessToken) {
                     e.target.reset()

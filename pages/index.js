@@ -4,7 +4,7 @@ import Message from '../components/Message'
 import SwitchMode from '../components/SwitchMode'
 import Timer from '../components/Timer'
 import nookies from 'nookies'
-import axios from 'axios'
+import axios from '../axios/axios'
 
 let mode = 'pomodoroDuration'
 let runningTimer
@@ -20,13 +20,14 @@ export async function getServerSideProps(ctx) {
         }
     }
 
-    const res = await axios.get('http://localhost:3500/timer', {
+    const res = await axios.get('/timer', {
         headers: {
             Authorization: `Bearer ${cookies?.jwt}`,
         },
     })
 
     const settings = res.data
+
     return {
         props: {
             ...settings,

@@ -46,10 +46,7 @@ export default function Register() {
 
         try {
             async function register() {
-                const result = await axios.post(
-                    'http://localhost:3500/register',
-                    user
-                )
+                const result = await axios.post('/register', user)
                 console.log(result)
             }
 
