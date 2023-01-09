@@ -6,6 +6,7 @@ import Timer from '../components/Timer'
 import nookies from 'nookies'
 import axios from 'axios'
 
+let mode = 'pomodoroDuration'
 let runningTimer
 
 export async function getServerSideProps(ctx) {
@@ -34,12 +35,13 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Home(props) {
-    const { pomodoroDuration, shortBreakDuration, longBreakDuration } = props
+    const [settings, setSettings] = useState(props)
+
     const [activeMode, setActiveMode] = useState('Pomodoro')
     const [isActive, setIsActive] = useState(false)
 
     const [progress, setProgress] = useState(0)
-    const [timeLeft, setTimeLeft] = useState(pomodoroDuration)
+    const [timeLeft, setTimeLeft] = useState(settings.pomodoroDuration)
     const [isOver, setIsOver] = useState(false)
 
     const audioElement = useRef(null)
@@ -79,19 +81,24 @@ export default function Home(props) {
         }
     }, [isActive])
 
+    // useEffect(() => {
+    //     check()
+    //     setTimeLeft(settings[mode])
+    // }, [settings])
+
     function switchMode(mode) {
         switch (mode) {
             case 'Short Break':
                 setActiveMode('Short Break')
-                setTimeLeft(shortBreakDuration)
+                setTimeLeft(settings.shortBreakDuration)
                 break
             case 'Long Break':
                 setActiveMode('Long Break')
-                setTimeLeft(longBreakDuration)
+                setTimeLeft(settings.longBreakDuration)
                 break
             default:
                 setActiveMode('Pomodoro')
-                setTimeLeft(pomodoroDuration)
+                setTimeLeft(settings.pomodoroDuration)
         }
     }
 
@@ -102,6 +109,25 @@ export default function Home(props) {
         }
         setActiveMode(mode)
     }
+
+    // function updateTimer() {
+    //     setSettings((prev) => {
+    //         return {
+    //             ...prev,
+    //             [mode]: 1200,
+    //         }
+    //     })
+    // }
+
+    // function check() {
+    //     if (activeMode === 'Pomodoro') {
+    //         mode = 'pomodoroDuration'
+    //     } else if (activeMode === 'Short Break') {
+    //         mode = 'shortBreakDuration'
+    //     } else {
+    //         mode = 'longBreakDuration'
+    //     }
+    // }
 
     return (
         <div className="bg-[#ca5652] w-screen h-screen p-4">
