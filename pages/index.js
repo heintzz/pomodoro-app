@@ -3,8 +3,10 @@ import Button from '../components/Button'
 import Message from '../components/Message'
 import SwitchMode from '../components/SwitchMode'
 import Timer from '../components/Timer'
-import nookies from 'nookies'
-import axios from '../axios/axios'
+import nookies, { destroyCookie } from 'nookies'
+import { useRouter } from 'next/router'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 let mode = 'pomodoroDuration'
 let runningTimer
@@ -20,23 +22,30 @@ export async function getServerSideProps(ctx) {
         }
     }
 
-    const res = await axios.get('/timer', {
+    const res = await axios.get('http://localhost:3500/timer', {
         headers: {
             Authorization: `Bearer ${cookies?.jwt}`,
         },
     })
 
+    console.log(res)
+
     const settings = res.data
 
     return {
         props: {
+            cookies,
             ...settings,
         },
     }
 }
 
 export default function Home(props) {
-    const [settings, setSettings] = useState(props)
+    const router = useRouter()
+    const dispatch = useDispatch()
+
+    const token = props.cookies.jwt
+    const settings = useSelector((state) => state.timerState)
 
     const [activeMode, setActiveMode] = useState('Pomodoro')
     const [isActive, setIsActive] = useState(false)
@@ -50,6 +59,11 @@ export default function Home(props) {
     function playAudio() {
         audioElement.current.play()
     }
+
+    useEffect(() => {
+        dispatch({ type: 'UPDATE_TIMER', payload: props })
+        console.log(settings)
+    }, [])
 
     useEffect(() => {
         function startTimer() {
@@ -82,10 +96,10 @@ export default function Home(props) {
         }
     }, [isActive])
 
-    // useEffect(() => {
-    //     check()
-    //     setTimeLeft(settings[mode])
-    // }, [settings])
+    useEffect(() => {
+        check()
+        setTimeLeft(settings[mode])
+    }, [settings])
 
     function switchMode(mode) {
         switch (mode) {
@@ -111,24 +125,42 @@ export default function Home(props) {
         setActiveMode(mode)
     }
 
-    // function updateTimer() {
-    //     setSettings((prev) => {
-    //         return {
-    //             ...prev,
-    //             [mode]: 1200,
-    //         }
-    //     })
-    // }
+    function updateTimer() {
+        const timerTime = {
+            pomodoroDuration: 25 * 60,
+            shortBreakDuration: 5 * 60,
+            longBreakDuration: 12 * 60,
+        }
 
-    // function check() {
-    //     if (activeMode === 'Pomodoro') {
-    //         mode = 'pomodoroDuration'
-    //     } else if (activeMode === 'Short Break') {
-    //         mode = 'shortBreakDuration'
-    //     } else {
-    //         mode = 'longBreakDuration'
-    //     }
-    // }
+        dispatch({ type: 'UPDATE_TIMER', payload: timerTime })
+
+        async function updateTimerDB() {
+            const res = await axios.post(
+                'http://localhost:3500/timer',
+                timerTime,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            )
+        }
+
+        updateTimerDB()
+    }
+
+    function check() {
+        if (activeMode === 'Pomodoro') {
+            mode = 'pomodoroDuration'
+        } else if (activeMode === 'Short Break') {
+            mode = 'shortBreakDuration'
+        } else {
+            mode = 'longBreakDuration'
+        }
+    }
+
+    function logout() {
+        destroyCookie(null, 'jwt')
+        router.replace('/login')
+    }
 
     return (
         <div className="bg-[#ca5652] w-screen h-screen p-4">
@@ -139,6 +171,7 @@ export default function Home(props) {
                     style={{ width: `${progress}%` }}
                 ></div>
             </div>
+            <button onClick={updateTimer}>update</button>
             <div className="max-w-[480px] mx-auto mt-5">
                 <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
                     <SwitchMode

@@ -1,9 +1,9 @@
-import axios from 'axios'
+import axios from '../../axios'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import Separator from '../../components/Separator'
 import nookies from 'nookies'
-import Router from 'next/router'
+import { useRouter } from 'next/router'
 
 const input =
     'w-full bg-slate-100 text-slate-600 p-2 font-light text-md rounded-lg'
@@ -23,6 +23,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Login() {
+    const router = useRouter()
     const [user, setUser] = useState({})
 
     function changeValue(e) {
@@ -45,8 +46,10 @@ export default function Login() {
 
                 if (result?.data?.accessToken) {
                     e.target.reset()
-                    nookies.set(null, 'jwt', result.data.accessToken)
-                    Router.replace('/')
+                    nookies.set(null, 'jwt', result.data.accessToken, {
+                        maxAge: 10 * 60 * 60,
+                    })
+                    router.replace('/')
                 }
             }
 

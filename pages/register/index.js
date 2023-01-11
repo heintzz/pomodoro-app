@@ -1,8 +1,7 @@
-import axios from 'axios'
+import axios from '../../axios'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import Separator from '../../components/Separator'
-
 import nookies from 'nookies'
 
 const input =
@@ -46,8 +45,7 @@ export default function Register() {
 
         try {
             async function register() {
-                const result = await axios.post('/register', user)
-                console.log(result)
+                await axios.post('/register', user)
             }
 
             register()

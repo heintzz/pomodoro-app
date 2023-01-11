@@ -1,0 +1,19 @@
+const initialState = {
+    pomodoroDuration: 25 * 60,
+    shortBreakDuration: 5 * 60,
+    longBreakDuration: 15 * 60,
+}
+
+function timerReducer(state = initialState, action) {
+    switch (action.type) {
+        case 'UPDATE_TIMER':
+            return {
+                ...state,
+                ...action.payload,
+            }
+        default:
+            return state
+    }
+}
+
+export default timerReducer
