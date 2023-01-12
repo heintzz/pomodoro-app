@@ -6,7 +6,7 @@ import Timer from '../components/Timer'
 import nookies, { destroyCookie } from 'nookies'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
+import axios from '../axios'
 import Setting from '../components/Setting'
 
 let mode = 'pomodoroDuration'
@@ -23,7 +23,7 @@ export async function getServerSideProps(ctx) {
         }
     }
 
-    const res = await axios.get('http://localhost:3500/timer', {
+    const res = await axios.get('/timer', {
         headers: {
             Authorization: `Bearer ${cookies?.jwt}`,
         },
@@ -52,6 +52,7 @@ export default function Home(props) {
     const [progress, setProgress] = useState(0)
     const [timeLeft, setTimeLeft] = useState(settings.pomodoroDuration * 60)
     const [isOver, setIsOver] = useState(false)
+    const [repetition, setRepetition] = useState(1)
 
     const audioElement = useRef(null)
 
@@ -86,6 +87,13 @@ export default function Home(props) {
         } else {
             if (isOver) {
                 playAudio()
+                if (activeMode === 'Pomodoro') {
+                    setRepetition((prev) => prev + 1)
+                    if (repetition % 9 === 0) {
+                        switchMode('Long Break')
+                        setRepetition(1)
+                    } else if (repetition % 3 === 0) switchMode('Short Break')
+                }
             }
             if (!timeLeft) {
                 setProgress(0)
@@ -136,13 +144,9 @@ export default function Home(props) {
     function updateTimer(timerSetting) {
         dispatch({ type: 'UPDATE_TIMER', payload: timerSetting })
         async function updateTimerDB() {
-            const res = await axios.post(
-                'http://localhost:3500/timer',
-                timerSetting,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            )
+            const res = await axios.post('/timer', timerSetting, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
         }
 
         updateTimerDB()
@@ -172,7 +176,7 @@ export default function Home(props) {
                         <Timer timeLeft={timeLeft} />
                         <Button isActive={isActive} setIsActive={setIsActive} />
                     </div>
-                    <Message timerType={activeMode} />
+                    <Message timerType={activeMode} repetition={repetition} />
                 </div>
                 <Setting settings={settings} updateTimer={updateTimer} />
             </div>
