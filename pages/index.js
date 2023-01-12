@@ -7,6 +7,7 @@ import nookies, { destroyCookie } from 'nookies'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
+import Setting from '../components/Setting'
 
 let mode = 'pomodoroDuration'
 let runningTimer
@@ -27,8 +28,6 @@ export async function getServerSideProps(ctx) {
             Authorization: `Bearer ${cookies?.jwt}`,
         },
     })
-
-    console.log(res)
 
     const settings = res.data
 
@@ -51,7 +50,7 @@ export default function Home(props) {
     const [isActive, setIsActive] = useState(false)
 
     const [progress, setProgress] = useState(0)
-    const [timeLeft, setTimeLeft] = useState(settings.pomodoroDuration)
+    const [timeLeft, setTimeLeft] = useState(settings.pomodoroDuration * 60)
     const [isOver, setIsOver] = useState(false)
 
     const audioElement = useRef(null)
@@ -62,7 +61,6 @@ export default function Home(props) {
 
     useEffect(() => {
         dispatch({ type: 'UPDATE_TIMER', payload: props })
-        console.log(settings)
     }, [])
 
     useEffect(() => {
@@ -98,22 +96,22 @@ export default function Home(props) {
 
     useEffect(() => {
         check()
-        setTimeLeft(settings[mode])
+        setTimeLeft(settings[mode] * 60)
     }, [settings])
 
     function switchMode(mode) {
         switch (mode) {
             case 'Short Break':
                 setActiveMode('Short Break')
-                setTimeLeft(settings.shortBreakDuration)
+                setTimeLeft(settings.shortBreakDuration * 60)
                 break
             case 'Long Break':
                 setActiveMode('Long Break')
-                setTimeLeft(settings.longBreakDuration)
+                setTimeLeft(settings.longBreakDuration * 60)
                 break
             default:
                 setActiveMode('Pomodoro')
-                setTimeLeft(settings.pomodoroDuration)
+                setTimeLeft(settings.pomodoroDuration * 60)
         }
     }
 
@@ -123,28 +121,6 @@ export default function Home(props) {
             switchMode(mode)
         }
         setActiveMode(mode)
-    }
-
-    function updateTimer() {
-        const timerTime = {
-            pomodoroDuration: 25 * 60,
-            shortBreakDuration: 5 * 60,
-            longBreakDuration: 12 * 60,
-        }
-
-        dispatch({ type: 'UPDATE_TIMER', payload: timerTime })
-
-        async function updateTimerDB() {
-            const res = await axios.post(
-                'http://localhost:3500/timer',
-                timerTime,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            )
-        }
-
-        updateTimerDB()
     }
 
     function check() {
@@ -157,32 +133,49 @@ export default function Home(props) {
         }
     }
 
+    function updateTimer(timerSetting) {
+        dispatch({ type: 'UPDATE_TIMER', payload: timerSetting })
+        async function updateTimerDB() {
+            const res = await axios.post(
+                'http://localhost:3500/timer',
+                timerSetting,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            )
+        }
+
+        updateTimerDB()
+    }
+
     function logout() {
         destroyCookie(null, 'jwt')
         router.replace('/login')
     }
 
     return (
-        <div className="bg-[#ca5652] w-screen h-screen p-4">
-            <audio ref={audioElement} src="./ringtone.mp3" />
-            <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto rounded-lg">
-                <div
-                    className={`progress h-full bg-red-100 absolute rounded-lg`}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div>
-            <button onClick={updateTimer}>update</button>
-            <div className="max-w-[480px] mx-auto mt-5">
-                <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
-                    <SwitchMode
-                        activeMode={activeMode}
-                        clickHandler={clickHandler}
-                    />
-                    <Timer timeLeft={timeLeft} />
-                    <Button isActive={isActive} setIsActive={setIsActive} />
+        <>
+            <div className="bg-[#ca5652] w-screen h-screen p-4">
+                <audio ref={audioElement} src="./ringtone.mp3" />
+                <div className="max-w-[480px] h-[5px] bg-red-300 relative mx-auto rounded-lg">
+                    <div
+                        className={`progress h-full bg-red-100 absolute rounded-lg`}
+                        style={{ width: `${progress}%` }}
+                    ></div>
                 </div>
-                <Message timerType={activeMode} />
+                <div className="max-w-[480px] mx-auto mt-5">
+                    <div className="flex flex-col p-[18px] rounded-lg bg-red-300/30 gap-y-10">
+                        <SwitchMode
+                            activeMode={activeMode}
+                            clickHandler={clickHandler}
+                        />
+                        <Timer timeLeft={timeLeft} />
+                        <Button isActive={isActive} setIsActive={setIsActive} />
+                    </div>
+                    <Message timerType={activeMode} />
+                </div>
+                <Setting settings={settings} updateTimer={updateTimer} />
             </div>
-        </div>
+        </>
     )
 }
