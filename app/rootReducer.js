@@ -3,8 +3,8 @@ import tokenReducer from '../reducers/tokenReducer'
 import timerReducer from '../reducers/timerReducer'
 
 const rootReducer = combineReducers({
-    timerState: timerReducer,
-    tokenState: tokenReducer,
+  timerState: timerReducer,
+  tokenState: tokenReducer,
 })
 
 export default rootReducer
