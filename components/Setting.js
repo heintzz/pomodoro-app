@@ -23,7 +23,7 @@ export default function Setting({ settings, updateTimer }) {
   }
 
   return (
-    <div className="font-Poppins my-20 flex h-fit w-fit flex-col gap-y-2 rounded-md bg-white p-3 shadow-neutral-700">
+    <div className="absolute top-0 font-Poppins my-20 flex h-fit w-fit flex-col gap-y-2 rounded-md bg-white p-3 shadow-neutral-700">
       <p className="tracking-wide">TIMER SETTING</p>
       <hr className="h-1 border-none bg-[#ca5652]" />
       <div className="flex flex-col gap-y-2">

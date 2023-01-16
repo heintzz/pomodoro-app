@@ -184,5 +184,4 @@ export default function Home() {
       </div>
     </>
   )
-  return <h1>hi</h1>
 }
