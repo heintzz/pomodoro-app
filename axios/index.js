@@ -25,8 +25,7 @@ axiosPrivate.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config
-    console.log(originalRequest)
-    if (error.response.status === 403 && !originalRequest.sent) {
+    if (error.response?.status === 403 && !originalRequest.sent) {
       originalRequest.sent = true
       const newAccessToken = await useRefreshToken()
       store.dispatch({ type: 'INSERT_TOKEN', payload: newAccessToken })
