@@ -27,6 +27,8 @@ export default function Login() {
   const router = useRouter()
   const dispatch = useDispatch()
   const [user, setUser] = useState({})
+  const [isError, setIsError] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
 
   function changeValue(e) {
     const target = e.target
@@ -39,23 +41,34 @@ export default function Login() {
     })
   }
 
+  function resetError() {
+    setIsError(false)
+    setErrorMsg('')
+  }
+
   function submitHandler(e) {
     e.preventDefault()
-
-    try {
-      async function login() {
+    async function login() {
+      try {
         const result = await axios.post('/auth', user)
         if (result?.data?.accessToken) {
           e.target.reset()
+          resetError()
           dispatch({ type: 'INSERT_TOKEN', payload: result.data.accessToken })
           router.replace('/')
         }
+        login()
+      } catch (err) {
+        const errMsg = err.response?.data?.msg
+        console.log(err)
+        setIsError(true)
+        setErrorMsg(errMsg)
+        setTimeout(() => {
+          resetError()
+        }, 2000)
       }
-
-      login()
-    } catch (error) {
-      console.error(error)
     }
+    login()
   }
 
   return (
@@ -66,9 +79,11 @@ export default function Login() {
           <p className="text-white/80 tracking-wider">Login</p>
         </div>
         <div className="flex flex-col p-[18px] rounded-lg bg-white gap-y-3">
-          <button className="w-full p-2 bg-slate-100 text-slate-500 font-bold text-md rounded-lg">
-            Login with Google
-          </button>
+          <Link href="http://localhost:3500/auth/google">
+            <button className="w-full p-2 bg-slate-100 text-slate-500 font-bold text-md rounded-lg">
+              Login with Google
+            </button>
+          </Link>
           <Separator />
           <form className="flex flex-col gap-y-3" onSubmit={submitHandler}>
             <label htmlFor="email" className={label}>
@@ -91,7 +106,13 @@ export default function Login() {
               className={input}
               onChange={changeValue}
             />
-            <button className="w-full mt-5 p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg">
+            {isError && <p className="text-red-600">{errorMsg}</p>}
+            <button
+              type="submit"
+              className={`w-full ${
+                !isError && 'mt-5'
+              } p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg`}
+            >
               Login with Email
             </button>
           </form>

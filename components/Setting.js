@@ -23,7 +23,7 @@ export default function Setting({ settings, updateTimer }) {
   }
 
   return (
-    <div className="absolute top-0 font-Poppins my-20 flex h-fit w-fit flex-col gap-y-2 rounded-md bg-white p-3 shadow-neutral-700">
+    <div className="font-Poppins my-20 flex h-fit w-fit flex-col gap-y-2 rounded-md bg-white p-3 shadow-neutral-700">
       <p className="tracking-wide">TIMER SETTING</p>
       <hr className="h-1 border-none bg-[#ca5652]" />
       <div className="flex flex-col gap-y-2">
@@ -34,11 +34,7 @@ export default function Setting({ settings, updateTimer }) {
             <input
               type="number"
               id="pomodoroDuration"
-              value={
-                input.pomodoroDuration?.length || !init
-                  ? input.pomodoroDuration
-                  : settings.pomodoroDuration || 0
-              }
+              value={input.pomodoroDuration?.length || !init ? input.pomodoroDuration : settings.pomodoroDuration || 0}
               className="w-24 rounded-md bg-red-100 p-2"
               onChange={inputChange}
             />
@@ -48,11 +44,7 @@ export default function Setting({ settings, updateTimer }) {
             <input
               type="number"
               id="shortBreakDuration"
-              value={
-                input.shortBreakDuration?.length || !init
-                  ? input.shortBreakDuration
-                  : settings.shortBreakDuration || 0
-              }
+              value={input.shortBreakDuration?.length || !init ? input.shortBreakDuration : settings.shortBreakDuration || 0}
               className="w-24 rounded-md bg-red-100 p-2"
               onChange={inputChange}
             />
@@ -62,21 +54,13 @@ export default function Setting({ settings, updateTimer }) {
             <input
               type="number"
               id="longBreakDuration"
-              value={
-                input.longBreakDuration?.length || !init
-                  ? input.longBreakDuration
-                  : settings.longBreakDuration || 0
-              }
+              value={input.longBreakDuration?.length || !init ? input.longBreakDuration : settings.longBreakDuration || 0}
               className="w-24 rounded-md bg-red-100 p-2"
               onChange={inputChange}
             />
           </div>
         </form>
-        <button
-          type="submit"
-          onClick={submitSetting}
-          className="mt-5 ml-auto w-fit rounded-md bg-[#ca5652] py-2 px-5 text-white"
-        >
+        <button type="submit" onClick={submitSetting} className="mt-5 ml-auto w-fit rounded-md bg-[#ca5652] py-2 px-5 text-white">
           OK
         </button>
       </div>
