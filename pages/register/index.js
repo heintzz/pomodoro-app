@@ -23,6 +23,8 @@ export async function getServerSideProps(ctx) {
 
 export default function Register() {
   const [user, setUser] = useState({})
+  const [isError, setIsError] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
 
   function changeValue(e) {
     const target = e.target
@@ -35,6 +37,11 @@ export default function Register() {
     })
   }
 
+  function resetError() {
+    setIsError(false)
+    setErrorMsg('')
+  }
+
   function submitHandler(e) {
     e.preventDefault()
 
@@ -43,15 +50,24 @@ export default function Register() {
       password: password.value,
     })
 
-    try {
-      async function register() {
-        await axios.post('/register', user)
+    async function register() {
+      try {
+        const res = await axios.post('/register', user)
+        if (res.status === 201) {
+          e.target.reset()
+          resetError()
+        }
+      } catch (err) {
+        const errMsg = err.response?.data?.msg
+        console.log(err)
+        setIsError(true)
+        setErrorMsg(errMsg)
+        setTimeout(() => {
+          resetError()
+        }, 2000)
       }
-
-      register()
-    } catch (err) {
-      console.error(err)
     }
+    register()
   }
 
   return (
@@ -62,9 +78,11 @@ export default function Register() {
           <p className="text-white/80 tracking-wider">Create Account</p>
         </div>
         <div className="flex flex-col p-[18px] rounded-lg bg-white gap-y-3">
-          <button className="w-full p-2 bg-slate-100 text-slate-500 font-bold text-md rounded-lg">
-            Sign up with Google
-          </button>
+          <Link href="http://localhost:3500/auth/google">
+            <button className="w-full p-2 bg-slate-100 text-slate-500 font-bold text-md rounded-lg">
+              Sign up with Google
+            </button>
+          </Link>
           <Separator />
           <form className="flex flex-col gap-y-3" onSubmit={submitHandler}>
             <label htmlFor="email" className={label}>
@@ -87,9 +105,12 @@ export default function Register() {
               className={input}
               onChange={changeValue}
             />
+            {isError && <p className="text-red-600">{errorMsg}</p>}
             <button
               type="submit"
-              className="w-full mt-5 p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg"
+              className={`w-full ${
+                !isError && 'mt-5'
+              } p-2 bg-black/80 text-slate-100 font-bold text-md rounded-lg`}
             >
               Sign up with Email
             </button>
